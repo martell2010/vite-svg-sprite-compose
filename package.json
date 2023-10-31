@@ -1,11 +1,11 @@
 {
   "name": "vite-svg-sprite-compose",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Vite SVG Sprite Merge Plugin is a Vite plugin that simplifies and automates the merging of multiple SVG icons into a single sprite. It allows you to combine SVG icons from various directories, apply optional SVGO optimization, and generate a unified SVG sprite with customizable configurations. Streamline your workflow by easily creating SVG sprite icons for use in web applications.",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
