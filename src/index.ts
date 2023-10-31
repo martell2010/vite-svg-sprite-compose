@@ -11,7 +11,7 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
         inputDirs,
         outputDir,
         disabled = false,
-        defaultSvgoConfig,
+        defaultSvgoConfig= {},
         spriteName = 'sprite.svg',
         idPrefix = '',
     } = config;
