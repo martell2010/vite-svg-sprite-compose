@@ -77,6 +77,10 @@ interface PluginConfig {
     spriteName?: `${string}.svg`;
     /* An optional prefix to add to SVG IDs. */
     idPrefix?: string;
+    /* Creating json file with svg IDs (optional, default is false). */
+    makeIdsArray?: boolean;
+    /* File name for json of svg IDs */
+    idsArrayFileName?: `${string}.json`;
 }
 
 ```

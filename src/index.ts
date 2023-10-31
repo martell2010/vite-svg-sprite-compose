@@ -27,9 +27,11 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
                 generator(fileName: string) {
                     const id = fileName.replace(/\.svg$/, '');
                     const name =  `${idPrefix}${id}`;
-                    if(makeIdsArray) {
+
+                    if (makeIdsArray) {
                         ids.push(name);
                     }
+
                     return name;
                 },
             },

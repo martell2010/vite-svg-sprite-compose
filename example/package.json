@@ -11,6 +11,6 @@
   "devDependencies": {
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vite-svg-sprite-compose": "^1.0.3"
+    "vite-svg-sprite-compose": "^1.0.7"
   }
 }
