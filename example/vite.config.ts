@@ -15,13 +15,14 @@ export default defineConfig({
                 },
                 // Add more input directories if needed.
             ],
-            outputDir: resolve(process.cwd(), 'src/assets'),
+            outputDir: resolve(process.cwd(), 'public/'),
             disabled: false, // Set to `true` to disable the plugin (optional).
             defaultSvgoConfig: {
                 // Add your default svgo configuration here (optional).
             },
             spriteName: 'sprite.svg', // Set the output sprite file name (optional).
             idPrefix: '', // Add an optional prefix to the SVG IDs (optional).
+            makeIdsArray: true,
         }),
     ],
 })

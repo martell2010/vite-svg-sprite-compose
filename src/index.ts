@@ -14,7 +14,11 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
         defaultSvgoConfig= {},
         spriteName = 'sprite.svg',
         idPrefix = '',
+        makeIdsArray = false,
+        idsArrayFileName='sprite-ids.json'
     } = config;
+
+    const ids: string[] = [];
 
     const spriteConfig = {
         shape: {
@@ -22,7 +26,11 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
                 separator: '',
                 generator(fileName: string) {
                     const id = fileName.replace(/\.svg$/, '');
-                    return `${idPrefix}${id}`;
+                    const name =  `${idPrefix}${id}`;
+                    if(makeIdsArray) {
+                        ids.push(name);
+                    }
+                    return name;
                 },
             },
         },
@@ -72,6 +80,10 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
             const { result } = await spriter.compileAsync();
 
             fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${spriteConfig.mode.symbol.sprite}`, result.symbol.sprite.contents);
+
+            if (makeIdsArray){
+                fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${idsArrayFileName}`, JSON.stringify(ids));
+            }
         },
     };
 }

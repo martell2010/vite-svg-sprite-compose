@@ -22,4 +22,6 @@ export interface PluginConfig {
     spriteName?: `${string}.svg`;
     /* An optional prefix to add to SVG IDs. */
     idPrefix?: string;
+    makeIdsArray?: boolean;
+    idsArrayFileName?: `${string}.json`;
 }
