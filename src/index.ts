@@ -2,8 +2,11 @@ import svgSpriter from 'svg-sprite';
 import { optimize } from 'svgo';
 import path from 'path';
 import fs from 'fs';
+import { PluginConfig } from "./types.ts";
+import { Plugin } from 'vite';
 
-export default function ViteSvgSpriteCompose(config) {
+
+export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
     const {
         inputDirs,
         outputDir,
@@ -17,7 +20,7 @@ export default function ViteSvgSpriteCompose(config) {
         shape: {
             id: {
                 separator: '',
-                generator(fileName) {
+                generator(fileName: string) {
                     const id = fileName.replace(/\.svg$/, '');
                     return `${idPrefix}${id}`;
                 },
@@ -39,20 +42,21 @@ export default function ViteSvgSpriteCompose(config) {
                 return;
             }
 
+            // @ts-ignore
             const spriter = svgSpriter(spriteConfig);
 
             inputDirs.forEach((inputDirConfig) => {
 
                 const {
-                    inputDir,
+                    dirPath,
                     svgoConfig,
                     enableSvgo = true,
                 } = inputDirConfig;
 
-                const iconFiles = fs.readdirSync(inputDir);
+                const iconFiles = fs.readdirSync(dirPath);
 
                 iconFiles.forEach((fileName) => {
-                    const filePath = path.join(inputDir, fileName);
+                    const filePath = path.join(dirPath, fileName);
                     const fileContent = fs.readFileSync(filePath, 'utf-8');
 
                     if (enableSvgo) {
@@ -67,8 +71,7 @@ export default function ViteSvgSpriteCompose(config) {
 
             const { result } = await spriter.compileAsync();
 
-            await fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${spriteConfig.mode.symbol.sprite}`, result.symbol.sprite.contents);
-
+            fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${spriteConfig.mode.symbol.sprite}`, result.symbol.sprite.contents);
         },
     };
 }

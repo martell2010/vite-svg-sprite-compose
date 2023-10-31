@@ -1,7 +1,7 @@
 import { Config } from 'svgo';
 
 export type InputDirConfig = {
-    path: string,
+    dirPath: string,
     svgoConfig?: Config;
     enableSvgo?: boolean;
 }
@@ -14,4 +14,3 @@ export interface PluginConfig {
     spriteName?: `${string}.svg`;
     idPrefix?: string;
 }
-export declare function ViteSvgSpriteCompose(config: PluginConfig): void;
