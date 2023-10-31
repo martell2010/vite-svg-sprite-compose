@@ -1,6 +1,5 @@
 # Vite-svg-sprite-compose
 
-![GitHub](https://img.shields.io/github/license/your-github-username/ViteSvgSpritePlugin)
 ![npm](https://img.shields.io/npm/v/vite-svg-sprite-compose)
 ![npm](https://img.shields.io/npm/dt/vite-svg-sprite-compose)
 
@@ -59,8 +58,6 @@ The above configuration will process your SVG files, optimize them using svgo if
 * `spriteName`: The name of the generated SVG sprite (optional, default is 'sprite.svg').
 * `idPrefix`: An optional prefix to add to SVG IDs.
 
-For more information on configuration options and usage, please refer to the [documentation][].
-
 ## License
-This project is licensed under the MIT License - see the [LICENSE][] file for details.
+This project is licensed under the MIT License.
 
