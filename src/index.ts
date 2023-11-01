@@ -1,4 +1,4 @@
-import svgSpriter from 'svg-sprite';
+import SVGSprite from 'svg-sprite';
 import { optimize } from 'svgo';
 import path from 'path';
 import fs from 'fs';
@@ -27,7 +27,6 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
     const spriteConfig = {
         shape: {
             id: {
-                separator: '',
                 generator(fileName: string) {
                     const id = fileName.replace(/\.svg$/, '');
                     const name =  `${idPrefix}${id}`;
@@ -46,6 +45,9 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
                 sprite: spriteName,
             },
         },
+        svg: {
+            xmlDeclaration: false,
+        },
     };
 
     return {
@@ -57,7 +59,7 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
             }
 
             // @ts-ignore
-            const spriter = svgSpriter(spriteConfig);
+            const spriter = new SVGSprite(spriteConfig);
 
             input.forEach((inputDirConfig) => {
 
@@ -85,10 +87,10 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
 
             const { result } = await spriter.compileAsync();
 
-            fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${spriteConfig.mode.symbol.sprite}`, result.symbol.sprite.contents);
+            fs.writeFileSync(`${outputDir}/${spriteName}`, result.symbol.sprite.contents);
 
             if (makeIdsArray){
-                fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${idsArrayName}`, JSON.stringify(ids));
+                fs.writeFileSync(`${outputDir}/${idsArrayName}`, JSON.stringify(ids));
             }
         },
     };

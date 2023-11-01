@@ -24,7 +24,7 @@ export default defineConfig({
             defaultSvgoConfig: {
                 // Add your default svgo configuration here (optional).
             },
-            idPrefix: '', // Add an optional prefix to the SVG IDs (optional).
+            idPrefix: 'icon-', // Add an optional prefix to the SVG IDs (optional).
         }),
     ],
 })
