@@ -5,9 +5,9 @@ import { resolve } from 'path';
 export default defineConfig({
     plugins: [
         ViteSvgSpriteCompose({
-            inputDirs: [
+            input: [
                 {
-                    dirPath: resolve(process.cwd(), 'src/assets/svg'),
+                    dir: resolve(process.cwd(), 'src/assets/svg'),
                     svgoConfig: {
                         // Add your svgo configuration here (optional).
                     },
@@ -15,14 +15,16 @@ export default defineConfig({
                 },
                 // Add more input directories if needed.
             ],
-            outputDir: resolve(process.cwd(), 'public/'),
+            output: {
+                dir: resolve(process.cwd(), 'public/'),
+                spriteName: 'sprite.svg', // Set the output sprite file name (optional).
+                makeIdsArray: true,
+            },
             disabled: false, // Set to `true` to disable the plugin (optional).
             defaultSvgoConfig: {
                 // Add your default svgo configuration here (optional).
             },
-            spriteName: 'sprite.svg', // Set the output sprite file name (optional).
             idPrefix: '', // Add an optional prefix to the SVG IDs (optional).
-            makeIdsArray: true,
         }),
     ],
 })

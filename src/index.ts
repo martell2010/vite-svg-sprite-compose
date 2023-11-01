@@ -8,15 +8,19 @@ import { Plugin } from 'vite';
 
 export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
     const {
-        inputDirs,
-        outputDir,
+        input,
+        output,
         disabled = false,
         defaultSvgoConfig= {},
-        spriteName = 'sprite.svg',
         idPrefix = '',
-        makeIdsArray = false,
-        idsArrayFileName='sprite-ids.json'
     } = config;
+
+    const {
+        dir: outputDir,
+        spriteName = 'sprite.svg',
+        makeIdsArray = false,
+        idsArrayName='sprite-ids.json'
+    } = output
 
     const ids: string[] = [];
 
@@ -55,18 +59,18 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
             // @ts-ignore
             const spriter = svgSpriter(spriteConfig);
 
-            inputDirs.forEach((inputDirConfig) => {
+            input.forEach((inputDirConfig) => {
 
                 const {
-                    dirPath,
+                    dir,
                     svgoConfig,
                     enableSvgo = true,
                 } = inputDirConfig;
 
-                const iconFiles = fs.readdirSync(dirPath);
+                const iconFiles = fs.readdirSync(dir);
 
                 iconFiles.forEach((fileName) => {
-                    const filePath = path.join(dirPath, fileName);
+                    const filePath = path.join(dir, fileName);
                     const fileContent = fs.readFileSync(filePath, 'utf-8');
 
                     if (enableSvgo) {
@@ -84,7 +88,7 @@ export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
             fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${spriteConfig.mode.symbol.sprite}`, result.symbol.sprite.contents);
 
             if (makeIdsArray){
-                fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${idsArrayFileName}`, JSON.stringify(ids));
+                fs.writeFileSync(`${spriteConfig.mode.symbol.dest}/${idsArrayName}`, JSON.stringify(ids));
             }
         },
     };
