@@ -1,97 +1,72 @@
-import SVGSprite from 'svg-sprite';
-import { optimize } from 'svgo';
-import path from 'path';
-import fs from 'fs';
-import { PluginConfig } from "./types.ts";
-import { Plugin } from 'vite';
+import { generateSprite, PluginConfig } from "svg-sprite-compose-cli";
+import { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import { resolve } from "path";
 
+export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin[] {
+  let viteConfig: ResolvedConfig = {} as ResolvedConfig;
+  const getConsoleMsg = (msg: string) => `[vite-svg-sprite-compose]: ${msg}`;
+  const getFullPath = (path: string): string => resolve(process.cwd(), path);
 
-export default function ViteSvgSpriteCompose(config: PluginConfig): Plugin {
-    const {
-        input,
-        output,
-        disabled = false,
-        defaultSvgoConfig= {},
-        idPrefix = '',
-    } = config;
+  let debounceTimer: any = null;
+  const debounce = (callback: Function) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(callback, 200);
+  };
 
-    const {
-        dir: outputDir,
-        spriteName = 'sprite.svg',
-        makeIdsArray = false,
-        idsArrayName='sprite-ids.json'
-    } = output
+  const successGeneration = () =>
+    viteConfig.logger.info(getConsoleMsg("Generation sprite success"));
+  const errorGeneration = (err: any) =>
+    viteConfig.logger.info(
+      getConsoleMsg(`Sprite error: ${JSON.stringify(err)}`),
+    );
 
-    const ids: string[] = [];
+  return [
+    {
+      name: "vite-svg-sprite-compose:build",
+      apply: "build",
+      configResolved(_config) {
+        viteConfig = _config;
+      },
+      enforce: "pre",
+      buildStart: () => {
+        generateSprite(config).then(successGeneration).catch(errorGeneration);
+      },
+    },
+    {
+      name: "vite-svg-sprite-compose:serve",
+      apply: "serve",
+      enforce: "pre",
+      configResolved(_config) {
+        viteConfig = _config;
+      },
+      buildStart: () => {
+        generateSprite(config).then(successGeneration).catch(errorGeneration);
+      },
+      config: () => ({ server: { watch: { disableGlobbing: false } } }),
+      configureServer({ watcher, ws }: ViteDevServer) {
+        const inputPaths = config.input.map(({ dir }) => getFullPath(dir));
 
-    const spriteConfig = {
-        shape: {
-            id: {
-                generator(fileName: string) {
-                    const id = fileName.replace(/\.svg$/, '');
-                    const name =  `${idPrefix}${id}`;
-
-                    if (makeIdsArray) {
-                        ids.push(name);
-                    }
-
-                    return name;
-                },
-            },
-        },
-        mode: {
-            symbol: {
-                dest: outputDir,
-                sprite: spriteName,
-            },
-        },
-        svg: {
-            xmlDeclaration: false,
-        },
-    };
-
-    return {
-        name: 'vite-svg-sprite-compose',
-
-        async buildStart() {
-            if (disabled) {
-                return;
-            }
-
-            // @ts-ignore
-            const spriter = new SVGSprite(spriteConfig);
-
-            input.forEach((inputDirConfig) => {
-
-                const {
-                    dir,
-                    svgoConfig,
-                    enableSvgo = true,
-                } = inputDirConfig;
-
-                const iconFiles = fs.readdirSync(dir);
-
-                iconFiles.forEach((fileName) => {
-                    const filePath = path.join(dir, fileName);
-                    const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-                    if (enableSvgo) {
-                        const r = optimize(fileContent, svgoConfig ?? defaultSvgoConfig);
-                        spriter.add(fileName, '', r.data);
-                    } else {
-                        spriter.add(fileName, '', fileContent);
-                    }
-
-                });
+        const reload = (path: string) => {
+          if (inputPaths.some((dir: string) => path.includes(dir))) {
+            debounce(() => {
+              generateSprite(config)
+                .then(() => {
+                  ws.send({ type: "full-reload", path: "*" });
+                  successGeneration();
+                })
+                .catch(errorGeneration);
             });
+          }
+        };
 
-            const { result } = await spriter.compileAsync();
-
-            fs.writeFileSync(`${outputDir}/${spriteName}`, result.symbol.sprite.contents);
-
-            if (makeIdsArray){
-                fs.writeFileSync(`${outputDir}/${idsArrayName}`, JSON.stringify(ids));
-            }
-        },
-    };
+        inputPaths.forEach((path) => watcher.add(path));
+        watcher.on("add", reload);
+        watcher.on("change", reload);
+        watcher.on("unlink", reload);
+      },
+    },
+  ];
 }
+
+export { defineConfig } from "svg-sprite-compose-cli";
+export type { PluginConfig } from "svg-sprite-compose-cli";
